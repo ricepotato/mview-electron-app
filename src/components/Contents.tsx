@@ -15,7 +15,11 @@ export default function Content({ contents }: ContentProps) {
         {contents.map((item) => (
           <li className="m-1 hover:shadow-lg ">
             <div className="h-40 w-40 bg-gray-200 flex justify-center">
-              <img className="h-full" src={item.imageSrc}></img>
+              <img
+                className="h-full"
+                alt={item.imageSrc}
+                src={item.imageSrc}
+              ></img>
             </div>
             <div className="text-center">{item.title}</div>
           </li>
