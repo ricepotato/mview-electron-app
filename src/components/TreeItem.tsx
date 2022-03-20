@@ -1,11 +1,16 @@
+import React from "react";
 import { useState } from "react";
+
+interface TreeItemProps {
+  item: TreeItemInterface;
+}
 
 interface TreeItemInterface {
   name: string;
   children?: TreeItemInterface[];
 }
 
-export default function TreeItem(item: TreeItemInterface) {
+export default function TreeItem({ item }: TreeItemProps) {
   const [showChildren, setShowChildren] = useState(false);
   const onClick = () => {
     setShowChildren(!showChildren);
@@ -74,7 +79,7 @@ export default function TreeItem(item: TreeItemInterface) {
       {item.children && showChildren ? (
         <ul className="pl-4">
           {item.children.map((item) => (
-            <TreeItem name={item.name} children={item.children} />
+            <TreeItem item={item} />
           ))}
         </ul>
       ) : null}

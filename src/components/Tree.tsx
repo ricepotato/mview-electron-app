@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TreeItem from "./TreeItem";
+import fs from "fs";
 
 interface TreeItemInterface {
   name: string;
@@ -20,12 +21,13 @@ export default function Tree() {
     },
     { name: "2021.12.23" },
   ]);
+
   return (
     <div>
       <h3>Root Directory</h3>
       <ul className="">
         {tree.map((item) => (
-          <TreeItem name={item.name} children={item.children} />
+          <TreeItem item={item} />
         ))}
       </ul>
     </div>
