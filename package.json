@@ -4,7 +4,7 @@
   "build": {
     "productName": "electron-test-app",
     "asar": true,
-    "appId": "org.cpro95.electron-test-app"
+    "appId": "mview-electron-app"
   },
   "version": "0.1.0",
   "private": true,

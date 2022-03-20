@@ -1,46 +1,96 @@
-# Getting Started with Create React App
+# mview
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## create react app
 
-In the project directory, you can run:
+```bash
+npx create-react-app my-app --template typescript
+```
 
-### `npm start`
+## install electron node module
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```bash
+npm install --save-dev electron electron-builder concurrently wait-on cross-env
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+npm install --save electron-is-dev
+```
 
-### `npm test`
+## make electron.js
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+public/electron.js
 
-### `npm run build`
+```javascript
+const { app, BrowserWindow } = require("electron");
+const path = require("path");
+const isDev = require("electron-is-dev");
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+let mainWindow;
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 900,
+    height: 680,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      devTools: isDev,
+    },
+  });
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  mainWindow.loadURL(
+    isDev
+      ? "http://localhost:3000"
+      : `file://${path.join(__dirname, "../build/index.html")}`
+  );
 
-### `npm run eject`
+  if (isDev) {
+    mainWindow.webContents.openDevTools({ mode: "detach" });
+  }
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  mainWindow.setResizable(true);
+  mainWindow.on("closed", () => (mainWindow = null));
+  mainWindow.focus();
+}
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+app.on("ready", createWindow);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+app.on("activate", () => {
+  if (mainWindow === null) {
+    createWindow();
+  }
+});
+```
 
-## Learn More
+## update package.js
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```json
+{
+"description": "electron test app",
+  "author": "ricepotato",
+  "main": "public/electron.js",
+  "homepage": "./",
+  "build": {
+    "productName": "electron-test-app",
+    "asar": true,
+  },
+  
+  
+  "scripts": {
+    "react-start": "react-scripts start",
+    "react-build": "react-scripts build",
+    "react-test": "react-scripts test",
+    "react-eject": "react-scripts eject",
+    "start": "concurrently \"cross-env NODE_ENV=development BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "build": "yarn react-build && electron-builder",
+    "release": "yarn react-build && electron-builder --publish=always"
+  },
+}
+```
